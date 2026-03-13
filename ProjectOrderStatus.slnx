@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="OrderAppService/OrderAppService.csproj" />
+  <Project Path="OrderDataService/OrderDataService.csproj" />
+  <Project Path="OrderModel/OrderModel.csproj" />
+  <Project Path="ProjectOrderStatus/ProjectOrderStatus.csproj" />
+</Solution>
