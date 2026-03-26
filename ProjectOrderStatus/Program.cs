@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace AGUILAR
 {
@@ -8,7 +9,8 @@ namespace AGUILAR
         {
             orderappservice appService = new orderappservice();
 
-            Console.WriteLine("ACCOUNT MANAGEMENT SYSTEM");
+            Console.WriteLine("   ORDER & DELIVERY TRACKING SYSTEM  ");
+            
 
             string username = "redlouies";
             string password = "123456";
@@ -21,49 +23,62 @@ namespace AGUILAR
 
             if (usernameInput == username && passwordInput == password)
             {
-                Console.WriteLine("Login successful.");
+                Console.WriteLine("\nLogin successful!");
 
                 bool running = true;
-                //this isasdsad
                 while (running)
                 {
-                    Console.WriteLine("\n--- Order System ---");
-                    Console.WriteLine("1. Create Order");
-                    Console.WriteLine("2. View Orders");
-                    Console.WriteLine("3. Exit");
-                    Console.Write("Choose: ");
+                    Console.WriteLine("\n--- Main Menu ---");
+                    Console.WriteLine("1. Place New Order");
+                    Console.WriteLine("2. Check Delivery Status");
+                    Console.WriteLine("3. Delete Order");
+                    Console.WriteLine("4. Exit ");
+                    Console.Write("Choose an option: ");
 
                     string choice = Console.ReadLine();
 
                     switch (choice)
                     {
                         case "1":
-                            Console.Write("Enter item name: ");
+                            Console.Write("\nEnter item name: ");
                             string item = Console.ReadLine();
-
-                            appService.CreateOrder(item);
-                            Console.WriteLine("Order created!");
+                            try
+                            {
+                                appService.CreateOrder(item);
+                                Console.WriteLine("SUCCESS: Order placed!");
+                            }
+                            catch (Exception ex) { Console.WriteLine($"ERROR: {ex.Message}"); }
                             break;
 
                         case "2":
-                            var orders = appService.GetOrders();
-
-                            if (orders.Count == 0)
+                            try
                             {
-                                Console.WriteLine("No orders yet.");
-                            }
-                            else
-                            {
-                                Console.WriteLine("\n--- Orders ---");
-
-                                foreach (var order in orders)
+                                var orders = appService.GetOrders();
+                                if (orders.Count == 0) { Console.WriteLine("\nNo orders found."); }
+                                else
                                 {
-                                    Console.WriteLine($"ID: {order.Id}, Item: {order.Item}, Ordered: {order.DateOrdered}, Status: {order.Status}");
+                                    Console.WriteLine("\n-------------------------------------------");
+                                    Console.WriteLine("{0,-20} | {1,-15}", "ITEM NAME", "STATUS");
+                                    Console.WriteLine("-------------------------------------------");
+                                    foreach (var o in orders) { Console.WriteLine("{0,-20} | {1,-15}", o.Name, o.Status); }
+                                    Console.WriteLine("-------------------------------------------");
                                 }
                             }
+                            catch (Exception ex) { Console.WriteLine($"ERROR: {ex.Message}"); }
                             break;
 
                         case "3":
+                            Console.Write("\nEnter item name to remove: ");
+                            string toDelete = Console.ReadLine();
+                            try
+                            {
+                                appService.RemoveOrder(toDelete);
+                                Console.WriteLine("SUCCESS: Order deleted and JSON synced.");
+                            }
+                            catch (Exception ex) { Console.WriteLine($"ERROR: {ex.Message}"); }
+                            break;
+
+                        case "4":
                             running = false;
                             break;
 
@@ -75,7 +90,8 @@ namespace AGUILAR
             }
             else
             {
-                Console.WriteLine("Invalid login.");
+                Console.WriteLine("\nLogin failed.");
+                Console.ReadKey();
             }
         }
     }

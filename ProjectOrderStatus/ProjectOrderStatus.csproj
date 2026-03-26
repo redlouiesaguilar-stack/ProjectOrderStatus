@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrderAppService\OrderAppService.csproj" />
+    <ProjectReference Include="..\OrderDataService\OrderDataService.csproj" />
+    <ProjectReference Include="..\OrderModel\OrderModel.csproj" />
   </ItemGroup>
 
 </Project>
