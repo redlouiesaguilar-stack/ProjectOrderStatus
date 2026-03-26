@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 using System.IO;
 using System.Text.Json;
-using System.Linq;
 
 namespace AGUILAR
 {
@@ -45,11 +44,7 @@ namespace AGUILAR
                     {
                         while (reader.Read())
                         {
-                            orders.Add(new OrderInfo
-                            {
-                                Name = reader["ItemName"].ToString(),
-                                Status = reader["Status"].ToString()
-                            });
+                            orders.Add(new OrderInfo { Name = reader["ItemName"].ToString(), Status = reader["Status"].ToString() });
                         }
                     }
                 }
