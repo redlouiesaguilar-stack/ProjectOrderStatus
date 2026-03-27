@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 
 namespace AGUILAR
 {
+    
     public interface IOrderDataService
     {
         void SaveToSql(string item);
@@ -12,7 +13,8 @@ namespace AGUILAR
         void SaveToJson(List<OrderInfo> orders);
     }
 
-    public class orderdataservice : IOrderDataService
+    
+    public class OrderSqlDataService : IOrderDataService
     {
         private string connectionString = "Server=localhost\\SQLEXPRESS;Database=OrderDeliveryDB;Trusted_Connection=True;TrustServerCertificate=True;";
 
@@ -88,5 +90,36 @@ namespace AGUILAR
         }
 
         public void SaveToJson(List<OrderInfo> orders) { }
+    }
+
+    
+    public class orderdataservice
+    {
+        IOrderDataService _dataService;
+
+        public orderdataservice(IOrderDataService orderDataService)
+        {
+            _dataService = orderDataService;
+        }
+
+        public void SaveToSql(string item)
+        {
+            _dataService.SaveToSql(item);
+        }
+
+        public List<OrderInfo> GetAllOrders()
+        {
+            return _dataService.GetAllOrders();
+        }
+
+        public void DeleteFromSql(string item)
+        {
+            _dataService.DeleteFromSql(item);
+        }
+
+        public void SaveToJson(List<OrderInfo> orders)
+        {
+            _dataService.SaveToJson(orders);
+        }
     }
 }
