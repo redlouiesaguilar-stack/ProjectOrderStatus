@@ -5,79 +5,87 @@ namespace AGUILAR
 {
     internal class Program
     {
+        static IOrderDataService dataService = new orderdataservice();
+        static orderappservice appService = new orderappservice(dataService);
+
+        static string username = "redlouies";
+        static string password = "123456";
+
         static void Main(string[] args)
         {
-            orderappservice appService = new orderappservice();
-            string username = "redlouies";
-            string password = "123456";
-
-            Console.WriteLine(" ORDER & DELIVERY TRACKING SYSTEM ");
-
-            Console.Write("Enter username: ");
-            string usernameInput = Console.ReadLine();
-
-            Console.Write("Enter password: ");
-            string passwordInput = Console.ReadLine();
-
-            if (usernameInput == username && passwordInput == password)
+            Console.WriteLine(" ORDER AND DELIVERY TRACKING SYSTEM ");
+            bool isLogin = ShowLoginOption();
+            while (isLogin)
             {
-                Console.WriteLine("\nLogin successful!");
+                Login();
+                isLogin = ShowLoginOption();
+            }
+        }
 
-                bool running = true;
-                while (running)
+        static bool ShowLoginOption()
+        {
+            Console.Write("\nDo you want to login? y/n: ");
+            string input = Console.ReadLine().ToLower();
+            if (input == "y") return true;
+            if (input == "n") return false;
+            Environment.Exit(0);
+            return false;
+        }
+
+        static void Login()
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                Console.Write("Enter username: ");
+                string u = Console.ReadLine();
+                Console.Write("Enter password: ");
+                string p = Console.ReadLine();
+
+                if (u == username && p == password)
                 {
-                    Console.WriteLine("\n--- Main Menu ---");
-                    Console.WriteLine("1. Place New Order");
-                    Console.WriteLine("2. Check Delivery Status");
-                    Console.WriteLine("3. Delete Order");
-                    Console.WriteLine("4. Exit ");
-                    Console.Write("Choose an option: ");
-
-                    string choice = Console.ReadLine();
-
-                    switch (choice)
-                    {
-                        case "1":
-                            Console.Write("\nEnter item name: ");
-                            string item = Console.ReadLine();
-                            appService.CreateOrder(item);
-                            Console.WriteLine("Success! Order Placed!");
-                            break;
-
-                        case "2":
-                            var orders = appService.GetOrders();
-                            if (orders.Count == 0) Console.WriteLine("\nNo orders found.");
-                            else
-                            {
-                                Console.WriteLine("\nORDERS:");
-                                foreach (var o in orders)
-                                {
-                                    Console.WriteLine($"{o.Name} - {o.Status}");
-                                }
-                            }
-                            break;
-
-                        case "3":
-                            Console.Write("\nEnter item name to remove: ");
-                            string toDelete = Console.ReadLine();
-                            appService.RemoveOrder(toDelete);
-                            Console.WriteLine("Success! Order Deleted!");
-                            break;
-
-                        case "4":
-                            running = false;
-                            break;
-
-                        default:
-                            Console.WriteLine("Invalid choice.");
-                            break;
-                    }
+                    Console.WriteLine("\nLogin Successful!");
+                    MainMenu();
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Incorrect Credentials.");
                 }
             }
-            else
+        }
+
+        static void MainMenu()
+        {
+            bool running = true;
+            while (running)
             {
-                Console.WriteLine("\nLogin failed.");
-                Console.ReadKey();
+                Console.WriteLine("\n----------\n MAIN MENU:");
+                string[] options = { "Place New Order", "Check Delivery Status", "Delete Order", "Exit" };
+                for (int x = 0; x < options.Length; x++) Console.WriteLine($"[{x + 1}] {options[x]}");
+                Console.Write("Option: ");
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        Console.Write("Enter Item Name: ");
+                        appService.CreateOrder(Console.ReadLine());
+                        Console.WriteLine("Order Saved");
+                        break;
+                    case "2":
+                        var orders = appService.GetOrders();
+                        if (orders.Count == 0) Console.WriteLine("No orders found.");
+                        else foreach (var o in orders) Console.WriteLine($"{o.OrderId} | {o.Name} | {o.Status}");
+                        break;
+                    case "3":
+                        Console.Write("Enter Item Name to remove: ");
+                        appService.RemoveOrder(Console.ReadLine());
+                        Console.WriteLine("Order Deleted!");
+                        break;
+                    case "4":
+                        running = false;
+                        break;
+                }
             }
         }
     }

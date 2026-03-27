@@ -4,12 +4,16 @@ namespace AGUILAR
 {
     public class orderappservice
     {
-        private orderdataservice _dataService = new orderdataservice();
+        private IOrderDataService _dataService;
+
+        public orderappservice(IOrderDataService orderDataService)
+        {
+            _dataService = orderDataService;
+        }
 
         public void CreateOrder(string item)
         {
             _dataService.SaveToSql(item);
-            SyncJsonFile();
         }
 
         public List<OrderInfo> GetOrders()
@@ -20,7 +24,6 @@ namespace AGUILAR
         public void RemoveOrder(string item)
         {
             _dataService.DeleteFromSql(item);
-            SyncJsonFile();
         }
 
         private void SyncJsonFile()
