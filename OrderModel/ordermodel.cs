@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace AGUILAR
+﻿namespace AGUILAR
 {
-    public class OrderInfo
+    public class Order
     {
-        public Guid OrderId { get; set; }
+        public int OrderId { get; set; }
         public string Name { get; set; }
         public string Status { get; set; }
     }

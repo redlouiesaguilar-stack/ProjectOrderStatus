@@ -4,32 +4,15 @@ namespace AGUILAR
 {
     public class orderappservice
     {
-        private IOrderDataService _dataService;
+        private readonly IOrderDataService _dataService;
 
-        public orderappservice(IOrderDataService orderDataService)
+        public orderappservice(IOrderDataService dataService)
         {
-            _dataService = orderDataService;
+            _dataService = dataService;
         }
 
-        public void CreateOrder(string item)
-        {
-            _dataService.SaveToSql(item);
-        }
-
-        public List<OrderInfo> GetOrders()
-        {
-            return _dataService.GetAllOrders();
-        }
-
-        public void RemoveOrder(string item)
-        {
-            _dataService.DeleteFromSql(item);
-        }
-
-        private void SyncJsonFile()
-        {
-            var allData = _dataService.GetAllOrders();
-            _dataService.SaveToJson(allData);
-        }
+        public void CreateOrder(string name) => _dataService.AddOrder(name);
+        public List<Order> GetOrders() => _dataService.GetAllOrders();
+        public void RemoveOrder(string name) => _dataService.DeleteOrder(name);
     }
 }

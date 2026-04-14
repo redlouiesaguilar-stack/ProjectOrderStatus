@@ -4,44 +4,32 @@ using Microsoft.Data.SqlClient;
 
 namespace AGUILAR
 {
-    
-    public interface IOrderDataService
+    public class orderdataservice : IOrderDataService
     {
-        void SaveToSql(string item);
-        List<OrderInfo> GetAllOrders();
-        void DeleteFromSql(string item);
-        void SaveToJson(List<OrderInfo> orders);
-    }
+        private string connectionString = "Server=localhost\\SQLEXPRESS;Database=OrderDeliveryDB;Integrated Security=True;TrustServerCertificate=True;";
 
-    
-    public class OrderSqlDataService : IOrderDataService
-    {
-        private string connectionString = "Server=localhost\\SQLEXPRESS;Database=OrderDeliveryDB;Trusted_Connection=True;TrustServerCertificate=True;";
-
-        public void SaveToSql(string item)
+        public void AddOrder(string name)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
-                    string query = "INSERT INTO Orders (OrderId, ItemName, OrderStatus) VALUES (@id, @name, @status)";
+                    string query = "INSERT INTO Orders (ItemName, OrderStatus) VALUES (@name, 'Pending')";
                     SqlCommand cmd = new SqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@id", Guid.NewGuid());
-                    cmd.Parameters.AddWithValue("@name", item);
-                    cmd.Parameters.AddWithValue("@status", "Pending");
+                    cmd.Parameters.AddWithValue("@name", name);
                     conn.Open();
                     cmd.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("\nDATABASE ERROR: " + ex.Message);
+                Console.WriteLine("DATABASE ERROR: " + ex.Message);
             }
         }
 
-        public List<OrderInfo> GetAllOrders()
+        public List<Order> GetAllOrders()
         {
-            List<OrderInfo> orders = new List<OrderInfo>();
+            List<Order> orders = new List<Order>();
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
@@ -53,11 +41,11 @@ namespace AGUILAR
                     {
                         while (reader.Read())
                         {
-                            orders.Add(new OrderInfo
+                            orders.Add(new Order
                             {
-                                OrderId = reader.GetGuid(0),
-                                Name = reader.GetString(1),
-                                Status = reader.GetString(2)
+                                OrderId = Convert.ToInt32(reader["OrderId"]),
+                                Name = reader["ItemName"].ToString(),
+                                Status = reader["OrderStatus"].ToString()
                             });
                         }
                     }
@@ -65,12 +53,12 @@ namespace AGUILAR
             }
             catch (Exception ex)
             {
-                Console.WriteLine("\nDATABASE ERROR: " + ex.Message);
+                Console.WriteLine("DATABASE ERROR: " + ex.Message);
             }
             return orders;
         }
 
-        public void DeleteFromSql(string item)
+        public void DeleteOrder(string name)
         {
             try
             {
@@ -78,48 +66,15 @@ namespace AGUILAR
                 {
                     string query = "DELETE FROM Orders WHERE ItemName = @name";
                     SqlCommand cmd = new SqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@name", item);
+                    cmd.Parameters.AddWithValue("@name", name);
                     conn.Open();
                     cmd.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("\nDATABASE ERROR: " + ex.Message);
+                Console.WriteLine("DATABASE ERROR: " + ex.Message);
             }
-        }
-
-        public void SaveToJson(List<OrderInfo> orders) { }
-    }
-
-    
-    public class orderdataservice
-    {
-        IOrderDataService _dataService;
-
-        public orderdataservice(IOrderDataService orderDataService)
-        {
-            _dataService = orderDataService;
-        }
-
-        public void SaveToSql(string item)
-        {
-            _dataService.SaveToSql(item);
-        }
-
-        public List<OrderInfo> GetAllOrders()
-        {
-            return _dataService.GetAllOrders();
-        }
-
-        public void DeleteFromSql(string item)
-        {
-            _dataService.DeleteFromSql(item);
-        }
-
-        public void SaveToJson(List<OrderInfo> orders)
-        {
-            _dataService.SaveToJson(orders);
         }
     }
 }
