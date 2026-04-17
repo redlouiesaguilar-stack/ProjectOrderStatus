@@ -4,15 +4,23 @@ namespace AGUILAR
 {
     public class orderappservice
     {
-        private readonly IOrderDataService _dataService;
+        private readonly orderdataservice _dataService;
 
-        public orderappservice(IOrderDataService dataService)
+        public orderappservice(orderdataservice dataService)
         {
             _dataService = dataService;
         }
 
-        public void CreateOrder(string name) => _dataService.AddOrder(name);
-        public List<Order> GetOrders() => _dataService.GetAllOrders();
-        public void RemoveOrder(string name) => _dataService.DeleteOrder(name);
+        public void CreateOrder(string name)
+        {
+            var newOrder = new Order { Name = name, Status = "Pending" };
+            _dataService.Add(newOrder);
+        }
+
+        public List<Order> GetOrders() => _dataService.GetAll();
+
+        public void UpdateOrderStatus(int id, string status) => _dataService.UpdateStatus(id, status);
+
+        public void RemoveOrder(string name) => _dataService.Delete(name);
     }
 }

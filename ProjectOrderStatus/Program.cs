@@ -5,7 +5,7 @@ namespace AGUILAR
 {
     internal class Program
     {
-        static IOrderDataService dataService = new orderdataservice();
+        static orderdataservice dataService = new orderdataservice();
         static orderappservice appService = new orderappservice(dataService);
 
         static string username = "redlouies";
@@ -26,10 +26,7 @@ namespace AGUILAR
         {
             Console.Write("\nDo you want to login? y/n: ");
             string input = Console.ReadLine().ToLower();
-            if (input == "y") return true;
-            if (input == "n") return false;
-            Environment.Exit(0);
-            return false;
+            return input == "y";
         }
 
         static void Login()
@@ -60,7 +57,7 @@ namespace AGUILAR
             while (running)
             {
                 Console.WriteLine("\n----------\n MAIN MENU:");
-                string[] options = { "Place New Order", "Check Delivery Status", "Delete Order", "Exit" };
+                string[] options = { "Place New Order", "Check Delivery Status", "Update Order Status", "Delete Order", "Exit" };
                 for (int x = 0; x < options.Length; x++) Console.WriteLine($"[{x + 1}] {options[x]}");
                 Console.Write("Option: ");
                 string choice = Console.ReadLine();
@@ -70,19 +67,27 @@ namespace AGUILAR
                     case "1":
                         Console.Write("Enter Item Name: ");
                         appService.CreateOrder(Console.ReadLine());
-                        Console.WriteLine("Order Saved");
+                        Console.WriteLine("Order Saved to Database!");
                         break;
                     case "2":
                         var orders = appService.GetOrders();
-                        if (orders.Count == 0) Console.WriteLine("No orders found.");
+                        if (orders.Count == 0) Console.WriteLine("No orders found in SQL.");
                         else foreach (var o in orders) Console.WriteLine($"{o.OrderId} | {o.Name} | {o.Status}");
                         break;
                     case "3":
-                        Console.Write("Enter Item Name to remove: ");
-                        appService.RemoveOrder(Console.ReadLine());
-                        Console.WriteLine("Order Deleted!");
+                        Console.Write("Enter Order ID to update: ");
+                        int id = int.Parse(Console.ReadLine());
+                        Console.Write("Enter New Status: ");
+                        string newStatus = Console.ReadLine();
+                        appService.UpdateOrderStatus(id, newStatus);
+                        Console.WriteLine("Status Updated!");
                         break;
                     case "4":
+                        Console.Write("Enter Item Name to remove: ");
+                        appService.RemoveOrder(Console.ReadLine());
+                        Console.WriteLine("Order Deleted from Database!");
+                        break;
+                    case "5":
                         running = false;
                         break;
                 }

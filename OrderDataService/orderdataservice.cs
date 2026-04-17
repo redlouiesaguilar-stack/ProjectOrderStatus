@@ -4,19 +4,20 @@ using Microsoft.Data.SqlClient;
 
 namespace AGUILAR
 {
-    public class orderdataservice : IOrderDataService
+    public class orderdataservice
     {
-        private string connectionString = "Server=localhost\\SQLEXPRESS;Database=OrderDeliveryDB;Integrated Security=True;TrustServerCertificate=True;";
+        private string connectionString = @"Server=localhost\SQLEXPRESS; Database=OrderSystem; Integrated Security=True; TrustServerCertificate=True;";
 
-        public void AddOrder(string name)
+        public void Add(Order order)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
-                    string query = "INSERT INTO Orders (ItemName, OrderStatus) VALUES (@name, 'Pending')";
+                    string query = "INSERT INTO Orders (ItemName, OrderStatus) VALUES (@name, @status)";
                     SqlCommand cmd = new SqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@name", name);
+                    cmd.Parameters.AddWithValue("@name", order.Name);
+                    cmd.Parameters.AddWithValue("@status", order.Status);
                     conn.Open();
                     cmd.ExecuteNonQuery();
                 }
@@ -27,7 +28,7 @@ namespace AGUILAR
             }
         }
 
-        public List<Order> GetAllOrders()
+        public List<Order> GetAll()
         {
             List<Order> orders = new List<Order>();
             try
@@ -58,7 +59,27 @@ namespace AGUILAR
             return orders;
         }
 
-        public void DeleteOrder(string name)
+        public void UpdateStatus(int id, string newStatus)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    string query = "UPDATE Orders SET OrderStatus = @status WHERE OrderId = @id";
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@status", newStatus);
+                    cmd.Parameters.AddWithValue("@id", id);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("DATABASE ERROR: " + ex.Message);
+            }
+        }
+
+        public void Delete(string name)
         {
             try
             {
